@@ -1,0 +1,68 @@
+name: Auto-Update LoL Stats
+
+# Déclenche l'action automatiquement
+on:
+  schedule:
+    # Tous les jours à 6h du matin (UTC)
+    - cron: '0 6 * * *'
+  
+  # Permet aussi le déclenchement manuel
+  workflow_dispatch:
+  
+  # Ou après chaque push sur main (optionnel)
+  # push:
+  #   branches: [ main ]
+
+jobs:
+  update-stats:
+    runs-on: ubuntu-latest
+    
+    steps:
+    # 1. Récupérer le code du repo
+    - name: Checkout repository
+      uses: actions/checkout@v4
+    
+    # 2. Installer Python
+    - name: Setup Python
+      uses: actions/setup-python@v4
+      with:
+        python-version: '3.11'
+    
+    # 3. Installer les dépendances
+    - name: Install dependencies
+      run: |
+        pip install requests beautifulsoup4 lxml
+    
+    # 4. Exécuter le scraper
+    - name: Scrape stats
+      run: |
+        python scripts/scraper.py
+    
+    # 5. Mettre à jour les fichiers HTML
+    - name: Update HTML files
+      run: |
+        python scripts/generator.py
+    
+    # 6. Committer les changements
+    - name: Commit changes
+      run: |
+        git config --local user.email "github-actions[bot]@users.noreply.github.com"
+        git config --local user.name "github-actions[bot]"
+        git add .
+        git diff --quiet && git diff --staged --quiet || git commit -m "🤖 Auto-update: Stats mises à jour le $(date +'%Y-%m-%d %H:%M')"
+    
+    # 7. Pousser les changements
+    - name: Push changes
+      uses: ad-m/github-push-action@master
+      with:
+        github_token: ${{ secrets.GITHUB_TOKEN }}
+        branch: ${{ github.ref }}
+    
+    # 8. Notifier (optionnel)
+    - name: Create update summary
+      if: success()
+      run: |
+        echo "✅ Stats mises à jour avec succès!" >> $GITHUB_STEP_SUMMARY
+        echo "" >> $GITHUB_STEP_SUMMARY
+        echo "Date: $(date)" >> $GITHUB_STEP_SUMMARY
+        cat update_log.md >> $GITHUB_STEP_SUMMARY
