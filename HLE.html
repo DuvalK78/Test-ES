@@ -1,0 +1,684 @@
+<!doctype html>
+
+<html lang="fr">
+
+<head>
+
+  <meta charset="utf-8" />
+
+  <meta name="viewport" content="width=device-width,initial-scale=1" />
+
+  <title>HLE — Stats & Roster</title>
+
+  <link href="https://fonts.googleapis.com/css2?family=Rajdhani:wght@400;600;700&display=swap" rel="stylesheet">
+
+  <style>
+
+    :root{
+
+      --bg:#05060a;
+
+      --panel:#0b0d12;
+
+      --muted:#9aa4b2;
+
+      --accent:#f37421;
+
+      --accent-2:#404040;
+
+      --glass: rgba(255,255,255,0.03);
+
+      --card-radius:14px;
+
+      --max-width:1100px;
+
+    }
+
+    *{box-sizing:border-box}
+
+    html,body{height:100%;margin:0}
+
+    body{
+
+      font-family: "Rajdhani", Verdana, Arial, sans-serif;
+
+      background: radial-gradient(800px 400px at 10% 10%, rgba(200,40,40,0.06), transparent 8%), linear-gradient(180deg,var(--bg), #05040a 60%);
+
+      color:#e8eef6;
+
+      padding:28px;
+
+      display:flex;
+
+      justify-content:center;
+
+      align-items:flex-start;
+
+    }
+
+    .wrap{
+
+      width:100%;
+
+      max-width:var(--max-width);
+
+      display:grid;
+
+      grid-template-columns: 1fr 360px;
+
+      gap:20px;
+
+      align-items:start;
+
+    }
+
+    .hero{
+
+      grid-column:1 / -1;
+
+      background: linear-gradient(180deg, rgba(255,255,255,0.02), rgba(255,255,255,0.01));
+
+      border-radius:var(--card-radius);
+
+      padding:18px;
+
+      display:flex;
+
+      gap:18px;
+
+      align-items:center;
+
+      border:1px solid rgba(255,255,255,0.04);
+
+      box-shadow: 0 10px 40px rgba(0,0,0,0.6), 0 2px 8px rgba(199,43,43,0.06);
+
+    }
+
+    .logo {
+
+      width:120px;
+
+      height:120px;
+
+      border-radius:12px;
+
+      background: linear-gradient(135deg, rgba(255,255,255,0.02), rgba(255,255,255,0.01));
+
+      display:flex;
+
+      align-items:center;
+
+      justify-content:center;
+
+      border:1px solid rgba(255,255,255,0.03);
+
+      position:relative;
+
+      overflow:hidden;
+
+      flex-shrink:0;
+
+    }
+
+    .logo img{width:100%;height:100%;object-fit:cover;display:block}
+
+    .hero-info{
+
+      flex:1;
+
+    }
+
+    .team-title{
+
+      font-size:22px;
+
+      font-weight:700;
+
+      letter-spacing:1px;
+
+      display:flex;
+
+      align-items:center;
+
+      gap:12px;
+
+    }
+
+    .team-title .tag{
+
+      background:linear-gradient(90deg,var(--accent),var(--accent-2));
+
+      padding:6px 10px;
+
+      border-radius:999px;
+
+      font-weight:700;
+
+      font-size:12px;
+
+      color:white;
+
+      box-shadow:0 6px 20px rgba(199,43,43,0.14);
+
+    }
+
+    .hero-sub{
+
+      color:var(--muted);
+
+      margin-top:6px;
+
+      font-size:14px;
+
+    }
+
+    .stats{
+
+      margin-top:12px;
+
+      display:flex;
+
+      gap:12px;
+
+      flex-wrap:wrap;
+
+    }
+
+    .stat{
+
+      background:var(--panel);
+
+      padding:12px 14px;
+
+      border-radius:12px;
+
+      min-width:120px;
+
+      border:1px solid rgba(255,255,255,0.02);
+
+      box-shadow: 0 6px 18px rgba(0,0,0,0.45);
+
+    }
+
+    .stat .num{font-weight:700;font-size:18px}
+
+    .stat .label{color:var(--muted);font-size:12px;margin-top:4px}
+
+    .panel{
+
+      background:linear-gradient(180deg, rgba(255,255,255,0.01), rgba(255,255,255,0.005));
+
+      padding:16px;
+
+      border-radius:var(--card-radius);
+
+      border:1px solid rgba(255,255,255,0.03);
+
+      box-shadow: 0 8px 30px rgba(0,0,0,0.55);
+
+    }
+
+    .roster{
+
+      margin-top:12px;
+
+      display:grid;
+
+      grid-template-columns: repeat(auto-fill,minmax(200px,1fr));
+
+      gap:12px;
+
+    }
+
+    .player-card{
+
+      background:linear-gradient(180deg, rgba(255,255,255,0.02), rgba(255,255,255,0.01));
+
+      border-radius:12px;
+
+      padding:12px;
+
+      display:flex;
+
+      gap:12px;
+
+      align-items:center;
+
+      cursor:pointer;
+
+      transition: transform .22s ease, box-shadow .22s ease;
+
+      border:1px solid rgba(255,255,255,0.03);
+
+    }
+
+    .player-card:hover{
+
+      transform: translateY(-8px);
+
+      box-shadow: 0 18px 40px rgba(0,0,0,0.6);
+
+    }
+
+    .avatar{
+
+      width:64px;height:64px;border-radius:10px;overflow:hidden;border:1px solid rgba(255,255,255,0.03);
+
+      flex-shrink:0;background:linear-gradient(180deg,#111,#222);
+
+      display:flex;align-items:center;justify-content:center;
+
+    }
+
+    .avatar img{width:100%;height:100%;object-fit:cover;display:block}
+
+    .pmeta{flex:1;text-align:left}
+
+    .pmeta .name{font-weight:700}
+
+    .pmeta .role{color:var(--muted);font-size:13px;margin-top:4px}
+
+    .pstat{font-weight:700;color:var(--accent);font-size:16px}
+
+    .sidebar{
+
+      display:flex;
+
+      flex-direction:column;
+
+      gap:12px;
+
+    }
+
+    .card-title{display:flex;align-items:center;justify-content:space-between;gap:8px;font-weight:700;margin-bottom:8px}
+
+    .mini{
+
+      padding:12px;border-radius:12px;background:linear-gradient(180deg, rgba(255,255,255,0.01), rgba(255,255,255,0.005));
+
+      border:1px solid rgba(255,255,255,0.03);
+
+    }
+
+    .role-list{display:flex;flex-direction:column;gap:8px}
+
+    .role-row{display:flex;align-items:center;gap:10px}
+
+    .role-name{width:70px;color:var(--muted);font-size:13px}
+
+    .bar-wrap{flex:1;background:rgba(255,255,255,0.03);height:10px;border-radius:8px;overflow:hidden}
+
+    .bar{height:100%;border-radius:8px;background:linear-gradient(90deg,var(--accent),var(--accent-2));width:30%}
+
+    .list{display:flex;flex-direction:column;gap:8px}
+
+    .list-item{display:flex;justify-content:space-between;gap:12px;padding:10px;border-radius:10px;background:linear-gradient(180deg, rgba(255,255,255,0.01), rgba(255,255,255,0.005));border:1px solid rgba(255,255,255,0.02)}
+
+    .back{
+
+      display:flex;gap:10px;align-items:center;justify-content:flex-start;margin-top:10px;
+
+    }
+
+    .back a{
+
+      color:var(--accent);
+
+      text-decoration:none;
+
+      font-weight:700;
+
+      background:transparent;border:1px solid rgba(243,116,33,0.08);padding:8px 12px;border-radius:10px;
+
+    }
+
+    @media (max-width:1000px){
+
+      .wrap{grid-template-columns:1fr}
+
+      .sidebar{order:2}
+
+    }
+
+    @media (max-width:520px){
+
+      .team-title{font-size:18px}
+
+      .logo{width:84px;height:84px}
+
+      .stats .stat{min-width:90px;padding:8px}
+
+      .player-card{padding:10px}
+
+    }
+
+    .shine {
+
+      position:absolute; inset:0; pointer-events:none; background:linear-gradient(90deg, rgba(255,255,255,0.02), rgba(255,255,255,0)); mix-blend-mode:overlay; border-radius:inherit;
+
+    }
+
+  </style>
+
+</head>
+
+<body>
+
+  <div class="wrap" role="main" aria-labelledby="teamTitle">
+
+    <!-- HERO -->
+
+    <div class="hero panel" aria-hidden="false">
+
+      <div class="logo" aria-hidden="true">
+
+        <img src="https://am-a.akamaihd.net/image?resize=400:&f=http%3A%2F%2Fstatic.lolesports.com%2Fteams%2F1631819564399_hle-2021-worlds.png" alt="HLE logo">
+
+        <div class="shine" aria-hidden="true"></div>
+
+      </div>
+
+      <div class="hero-info">
+
+        <div class="team-title" id="teamTitle">
+
+          <div>HLE</div>
+
+          <div class="tag">LCK • Team</div>
+
+        </div>
+
+        <div class="hero-sub">Stats & roster — Données simulées. Année 2025</div>
+
+        <div class="stats" role="list">
+
+          <div class="stat" role="listitem">
+
+            <div class="num">65%</div>
+
+            <div class="label">Win Rate (saison)</div>
+
+          </div>
+
+          <div class="stat" role="listitem">
+
+            <div class="num">1.23</div>
+
+            <div class="label">KD moyen</div>
+
+          </div>
+
+          <div class="stat" role="listitem">
+
+            <div class="num">0.47</div>
+
+            <div class="label">Gol Percent Rating</div>
+
+          </div>
+
+          <div class="stat" role="listitem">
+
+            <div class="num">4</div>
+
+            <div class="label">Tournois (gagnés)</div>
+
+          </div>
+
+          <div class="stat" role="listitem">
+
+            <div class="num">95-51</div>
+
+            <div class="label">W-L</div>
+
+          </div>
+
+          <div class="stat" role="listitem">
+
+            <div class="num">146</div>
+
+            <div class="label">Total Games Played</div>
+
+          </div>
+
+          <div class="stat" role="listitem">
+            <div class="num">#2 1585pts</div>
+            <div class="label">Power Ranking</div>
+          </div>
+
+        </div>
+
+      </div>
+
+    </div>
+
+
+
+    <!-- LEFT: roster + description -->
+
+    <section class="panel" aria-labelledby="rosterTitle">
+
+      <div style="display:flex;justify-content:space-between;align-items:center">
+
+        <h3 id="rosterTitle" style="margin:0">Roster actuel</h3>
+
+        <small style="color:var(--muted)">Dernière mise à jour: 2025-11-26</small>
+
+      </div>
+
+      <div class="roster" id="roster">
+
+        <!-- Player cards -->
+
+        <div class="player-card">
+
+          <div class="avatar"><img src="https://images.weserv.nl/?url=static.wikia.nocookie.net/lolesports_gamepedia_en/images/d/d7/HLE_Zeus_2025_Split_1_2.png/revision/latest?cb=20250228175144" alt="Zeus portrait"></div>
+
+          <div class="pmeta">
+
+            <div class="name">Zeus</div>
+
+            <div class="role">Top</div>
+
+          </div>
+
+          <div class="pstat">3.2 KDA</div>
+
+        </div>
+
+        <div class="player-card">
+
+          <div class="avatar"><img src="https://images.weserv.nl/?url=static.wikia.nocookie.net/lolesports_gamepedia_en/images/6/61/TES_Kanavi_2025_Worlds.png/revision/latest?cb=20251013151906" alt="Kanavi portrait"></div>
+
+          <div class="pmeta">
+
+            <div class="name">Kanavi</div>
+
+            <div class="role">Jungle</div>
+
+          </div>
+
+          <div class="pstat">3.8 KDA</div>
+
+        </div>
+
+        <div class="player-card">
+
+          <div class="avatar"><img src="https://images.weserv.nl/?url=static.wikia.nocookie.net/lolesports_gamepedia_en/images/1/19/HLE_Zeka_2025_Split_1_2.png/revision/latest?cb=20250228175142" alt="Zeka portrait"></div>
+
+          <div class="pmeta">
+
+            <div class="name">Zeka</div>
+
+            <div class="role">Mid</div>
+
+          </div>
+
+          <div class="pstat">4.4 KDA</div>
+
+        </div>
+
+        <div class="player-card">
+          
+          <div class="avatar"><img src="https://images.weserv.nl/?url=static.wikia.nocookie.net/lolesports_gamepedia_en/images/5/52/T1_Gumayusi_2025_Split_3.png/revision/latest?cb=20251011134624" alt="Gumayusi portrait"></div>
+          
+          <div class="pmeta">
+            
+            <div class="name">Gumayusi</div>
+            
+            <div class="role">ADC</div>
+            
+          </div>
+          
+          <div class="pstat">5.1 KDA</div>
+          
+        </div>
+
+        <div class="player-card">
+
+          <div class="avatar"><img src="https://images.weserv.nl/?url=static.wikia.nocookie.net/lolesports_gamepedia_en/images/6/63/HLE_Delight_2025_Split_1_2.png/revision/latest?cb=20250228175139" alt="Delight portrait"></div>
+
+          <div class="pmeta">
+
+            <div class="name">Delight</div>
+
+            <div class="role">Support</div>
+
+          </div>
+
+          <div class="pstat">3.9 KDA</div>
+
+        </div>
+
+      </div>
+
+      <div style="margin-top:14px">
+
+        <h4 style="margin:0 0 8px 0">Description</h4>
+
+        <p style="color:var(--muted);line-height:1.45;margin:0">
+
+          Hanwha Life Esports (HLE) est une équipe sud-coréenne réputée pour son jeu méthodique, son talent individuel et sa capacité à créer des retournements spectaculaires lors des grandes compétitions de League of Legends.
+
+        </p>
+
+      </div>
+
+      <div class="back" style="margin-top:16px">
+
+        <a href="IndexEsports.html" aria-label="Retour à l'index">← Retour à l'index</a>
+
+      </div>
+
+    </section>
+
+
+
+    <!-- RIGHT: sidebar -->
+
+    <aside class="sidebar">
+
+      <div class="mini panel">
+
+        <div class="card-title"><span>Stats</span><small style="color:var(--muted)">This Year</small></div>
+
+        <div class="role-list">
+
+          <div class="role-row">
+
+            <div class="role-name">First Blood</div>
+
+            <div class="bar-wrap"><div class="bar" style="width:49%"></div></div>
+
+            <div style="width:36px;text-align:right;font-weight:700;color:var(--muted)">49%</div>
+
+          </div>
+
+          <div class="role-row">
+
+            <div class="role-name">First Tower</div>
+
+            <div class="bar-wrap"><div class="bar" style="width:68%"></div></div>
+
+            <div style="width:36px;text-align:right;font-weight:700;color:var(--muted)">68%</div>
+
+          </div>
+
+          <div class="role-row">
+
+            <div class="role-name">First Dragon</div>
+
+            <div class="bar-wrap"><div class="bar" style="width:48%"></div></div>
+
+            <div style="width:36px;text-align:right;font-weight:700;color:var(--muted)">48%</div>
+
+          </div>
+
+          <div class="role-row">
+
+            <div class="role-name">First 3 towers</div>
+
+            <div class="bar-wrap"><div class="bar" style="width:62%"></div></div>
+
+            <div style="width:36px;text-align:right;font-weight:700;color:var(--muted)">62%</div>
+
+          </div>
+
+        </div>
+
+      </div>
+
+      <div class="mini panel">
+
+        <div class="card-title"><span>Palmarès</span><small style="color:var(--muted)">Tournois</small></div>
+
+        <div class="list">
+
+          <div class="list-item">
+
+            <div><strong>First Stand</strong><div style="color:var(--muted);font-size:13px">1st</div></div>
+
+            <div style="color:var(--muted);font-size:13px">1x</div>
+
+          </div>
+
+          <div class="list-item">
+
+            <div><strong>LCK</strong><div style="color:var(--muted);font-size:13px">4th</div></div>
+
+            <div style="color:var(--muted);font-size:13px">2x</div>
+
+          </div>
+
+          <div class="list-item">
+
+            <div><strong>LCK Cup</strong><div style="color:var(--muted);font-size:13px">1st</div></div>
+
+            <div style="color:var(--muted);font-size:13px">1x</div>
+
+          </div>
+
+        </div>
+
+      </div>
+
+      <div class="mini panel">
+
+        <div class="card-title"><span>Top performers</span><small style="color:var(--muted)">Saison</small></div>
+
+        <div style="display:flex;flex-direction:column;gap:8px">
+
+          <div style="display:flex;justify-content:space-between"><span style="color:var(--muted)">Top KDA</span><strong>Gumayusi (5.1)</strong></div>
+
+        </div>
+
+      </div>
+
+    </aside>
+
+  </div>
+
+</body>
+
+</html>
+
+                                     
